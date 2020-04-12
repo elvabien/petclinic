@@ -10,10 +10,10 @@ on:
     branches: [ dev ]
 
 env:
-  ACR_REPOSITORY: renekevin.azurecr.io
-  AKS_CLUSTER: petclinic-aks-cluster
-  AKS_RESOURCEGROUP: myResourceGroup
-  NAMESPACE: petclinic-app
+  ACR_REPOSITORY: gitlabpetclinic.azurecr.io
+  AKS_CLUSTER: petclinic-cluster
+  AKS_RESOURCEGROUP: GitlabTestRG
+  #NAMESPACE: petclinic-app
 
 jobs:
   build:

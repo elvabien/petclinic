@@ -9,23 +9,59 @@ on:
   pull_request:
     branches: [ dev ]
 
+env:
+  ACR_REPOSITORY: renekevin.azurecr.io
+  AKS_CLUSTER: petclinic-aks-cluster
+  AKS_RESOURCEGROUP: myResourceGroup
+  NAMESPACE: petclinic-app
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-
-    - name: Cache Maven packages
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+    # Test
+    - name: Test with Maven
+      run: mvn test -B --file pom.xml
+    # Build
     - name: Build with Maven
-      run: mvn -B test --file pom.xml
+      run: mvn package -B -DskipTests --file pom.xml
+    # Connect to ACR
+    - name: Connect to ACR
+      uses: azure/docker-login@v1
+      with:
+        login-server: renekevin.azurecr.io
+        username: ${{ secrets.ACR_USER }}
+        password: ${{ secrets.ACR_PASSWORD }}
+    # Build + Push docker image to ACR
+    - run: |
+        docker build . -t ${{ env.ACR_REPOSITORY }}/petclinic:latest
+        docker push ${{ env.ACR_REPOSITORY }}/petclinic:latest
+    # Select AKS cluster
+    - uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: ${{ env.AKS_CLUSTER }}
+        resource-group: ${{ env.AKS_RESOURCEGROUP }}
+    # Imagepullscret for ACR
+    - uses: Azure/k8s-create-secret@v1
+      with:
+        namesapce: ${{ env.NAMESPACE }}
+        container-registry-url: ${{ env.ACR_REPOSITORY }}
+        container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        secret-name: ${{ env.ACR_REPOSITORY }}-secret
+    # Deploy to AKS
+    - uses: Azure/k8s-deploy@v1
+      with:
+        manifests: |
+          manifests/deployment.yml
+          manifests/service.yml
+        images: |
+          ${{ env.ACR_REPOSITORY }}/petclinic:latest
+        imagepullsecrets: |
+          ${{ env.ACR_REPOSITORY }}-secret

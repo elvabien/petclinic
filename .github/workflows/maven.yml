@@ -10,7 +10,7 @@ on:
     branches: [ dev ]
 
 env:
-  login-server: gitlabpetclinic.azurecr.io
+  ACR_REPOSITORY: gitlabpetclinic.azurecr.io
   AKS_CLUSTER: petclinic-cluster
   AKS_RESOURCEGROUP: GitlabTestRG
   #NAMESPACE: petclinic-app

@@ -52,7 +52,7 @@ jobs:
       with:
         #namespace: ${{ env.NAMESPACE }}
         container-registry-url: ${{ env.ACR_REPOSITORY }}
-        container-registry-username: ${{ secrets.ACR_USER }}
+        container-registry-username: ${{ secrets.ACR_USER}}
         container-registry-password: ${{ secrets.ACR_PASSWORD }}
         secret-name: ${{ env.ACR_REPOSITORY }}-secret
     # Deploy to AKS

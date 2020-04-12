@@ -10,7 +10,7 @@ on:
     branches: [ dev ]
 
 env:
-  ACR_REPOSITORY: gitlabpetclinic.azurecr.io
+  login-server: gitlabpetclinic.azurecr.io
   AKS_CLUSTER: petclinic-cluster
   AKS_RESOURCEGROUP: GitlabTestRG
   #NAMESPACE: petclinic-app
@@ -34,7 +34,7 @@ jobs:
     - name: Connect to ACR
       uses: azure/docker-login@v1
       with:
-        login-server: renekevin.azurecr.io
+        login-server: gitlabpetclinic.azurecr.io
         username: ${{ secrets.ACR_USER }}
         password: ${{ secrets.ACR_PASSWORD }}
     # Build + Push docker image to ACR
@@ -50,7 +50,7 @@ jobs:
     # Imagepullscret for ACR
     - uses: Azure/k8s-create-secret@v1
       with:
-        namesapce: ${{ env.NAMESPACE }}
+        #namespace: ${{ env.NAMESPACE }}
         container-registry-url: ${{ env.ACR_REPOSITORY }}
         container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
         container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}

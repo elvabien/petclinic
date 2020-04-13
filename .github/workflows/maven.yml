@@ -26,10 +26,11 @@ jobs:
         java-version: 1.8
     # Test
     - name: Test with Maven
-      run: mvn test -B --file pom.xml
+      run: mvn test -B --file pom.xml 
     # Build
     - name: Build with Maven
-      run: mvn package -B -DskipTests --file pom.xml
+      #run: mvn package -B -DskipTests --file pom.xml 
+      run: mvn package -B -DskipTests --file pom.xml -P MySQL -DskipTests=true
     # Connect to ACR
     - name: Connect to ACR
       uses: azure/docker-login@v1

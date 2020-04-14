@@ -1,26 +1,15 @@
----
-
-version: "3.4"
-
+version: '3'
 services:
-  petclinic:
-    image: ivan/petclinic
-    build: 
-      context: ./tomcat_petclinic
-      dockerfile: Dockerfile
+  azure-vote-back:
+    image: redis
+    container_name: petclinic-back
     ports:
-      - 8080:8080
-    depends_on:
-      - "db"
-    command: ["./wait-for-it.sh", "db:3306", "--timeout=30" ,"--", "catalina.sh", "run"]
+        - "6379:6379"
 
-  db:
-    image: mysql:5.7
-    container_name: mydb
+  azure-vote-front:
+    image: petclinic.azurecr.io/petclinic:latest
+    container_name: petclinic-front
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: petclinic
-      MYSQL_USER: petclinic
-      MYSQL_PASSWORD: petclinic
-      #ports:
-      #- 3306:3306
+      REDIS: petclinic-back
+    ports:
+        - "8080:80"

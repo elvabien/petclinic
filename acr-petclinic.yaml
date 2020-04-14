@@ -54,7 +54,7 @@ spec:
         "beta.kubernetes.io/os": linux
       containers:
       - name: petclinic-front
-        image: gitlabpetclinic.azurecr.io/petclinic:latest
+        image: petclinic.azurecr.io/petclinic:latest
         ports:
         - containerPort: 8080
         resources:

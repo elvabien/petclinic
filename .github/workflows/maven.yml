@@ -24,13 +24,20 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    # Caching the Maven dependencies to speed up the workflow exection time
+    - name: Cache Maven dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2 
     # Test
     - name: Test with Maven
       run: mvn test -B --file pom.xml 
     # Build
     - name: Build with Maven
       #run: mvn package -B -DskipTests --file pom.xml 
-      run: mvn package -B -DskipTests --file pom.xml -P MySQL
+      run: mvn package -P MySQL -B -DskipTests --file pom.xml 
     # Connect to ACR
     - name: Connect to ACR
       uses: azure/docker-login@v1
